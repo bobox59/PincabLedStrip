@@ -66,22 +66,22 @@ void setup() {
   /****/
   ClearAllLedData();
   ledstrip.show();
-  for (uint32_t i = 0; i < configuredStripLength; i++) {
-    ledstrip.setPixel(i, 255, 0, 0);
+for (uint32_t i = 0; i < configuredStripLength* NUMBER_LEDSTRIP; i++) {
+  ledstrip.setPixel(i, BRIGHTNESS, 0, 0);
   }
   ledstrip.show();
   FastLED.delay(200);
   ClearAllLedData();
   ledstrip.show();
-  for (uint32_t i = 0; i < configuredStripLength; i++) {
-    ledstrip.setPixel(i, 0, 255, 0);
+  for (uint32_t i = 0; i < configuredStripLength* NUMBER_LEDSTRIP; i++) {
+    ledstrip.setPixel(i, 0, BRIGHTNESS, 0);
   }
   ledstrip.show();
   FastLED.delay(200);
   ClearAllLedData();
   ledstrip.show();
-  for (uint32_t i = 0; i < configuredStripLength; i++) {
-    ledstrip.setPixel(i, 0, 0, 255);
+  for (uint32_t i = 0; i < configuredStripLength* NUMBER_LEDSTRIP; i++) {
+    ledstrip.setPixel(i, 0, 0, BRIGHTNESS);
   }
   ledstrip.show();
   FastLED.delay(200);

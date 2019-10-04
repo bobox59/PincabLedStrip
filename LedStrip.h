@@ -16,7 +16,9 @@ FASTLED_USING_NAMESPACE
 #define DATA_PIN3   13 // D7
 #define DATA_PIN4   15 // D8
 #define DATA_PIN5   5 // D1 
-#define DATA_PIN6   16 // D0
+#define DATA_PIN6   4 // D2
+#define DATA_PIN7   0 // D3
+#define DATA_PIN8   2 // D4
 
 //#define LED_TYPE    WS2811
 #define LED_TYPE    WS2812
@@ -27,7 +29,7 @@ FASTLED_USING_NAMESPACE
 //Defines the max number of ledstrip which is allowed per ledstrip.
 #define MaxLedsPerStrip 600
 //Defines the number of ledstrip
-#define NUMBER_LEDSTRIP 6
+#define NUMBER_LEDSTRIP 8
 //Defines Brightness
 #define BRIGHTNESS  255 // Defines Brightness in RGB boot sequence
 #define BRIGHTNESS_PIN1 255 // Defines Brightness in pin 1 (0 to 255)
@@ -36,6 +38,8 @@ FASTLED_USING_NAMESPACE
 #define BRIGHTNESS_PIN4 255 // Defines Brightness in pin 4 (0 to 255)
 #define BRIGHTNESS_PIN5 255 // Defines Brightness in pin 5 (0 to 255)
 #define BRIGHTNESS_PIN6 255 // Defines Brightness in pin 6 (0 to 255)
+#define BRIGHTNESS_PIN7 255 // Defines Brightness in pin 7 (0 to 255)
+#define BRIGHTNESS_PIN8 255 // Defines Brightness in pin 8 (0 to 255)
 /*************   END VALUE TO CHANGE  *******************/
 
 class LedStrip {
