@@ -3,9 +3,11 @@
 
 #include <Arduino.h>
 
-#ifndef DEBUG_ON_WIFI
-#define FASTLED_ALLOW_INTERRUPTS 0
-#endif
+// Try to change this line:
+// #define FASTLED_ALLOW_INTERRUPTS 0
+//
+// From FastLED github : Sometimes, especially on the esp8266, you might have better luck by just tweaking the re-try attempt code with:
+#define FASTLED_INTERRUPT_RETRY_COUNT 1
 
 // FastLED library needed
 // https://github.com/FastLED/FastLED
@@ -24,14 +26,15 @@ FASTLED_USING_NAMESPACE
 
 //#define LED_TYPE    WS2811
 #define LED_TYPE    WS2812
+
 //#define COLOR_ORDER RGB
 #define COLOR_ORDER GRB
 
 /*************   VALUE TO CHANGE  *******************/
 //Defines the max number of ledstrip which is allowed per ledstrip.
-#define MaxLedsPerStrip 600
+#define MaxLedsPerStrip 1100
 //Defines the number of ledstrip
-#define NUMBER_LEDSTRIP 8
+#define NUMBER_LEDSTRIP 3
 //Defines Brightness
 #define BRIGHTNESS  255 // Defines Brightness in RGB boot sequence
 #define BRIGHTNESS_PIN1 255 // Defines Brightness in pin 1 (0 to 255)

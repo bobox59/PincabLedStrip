@@ -1,24 +1,16 @@
 /********************************************************************************************************
-** Pincab Ledstrip Controller
-********************************************************************************************************/
+   Pincab Ledstrip Controller
+   -------------------------- Mod by bobox59 - compatibility with TeensyStripController v1.2
+ *******************************************************************************************************/
 /*
- * This code is fully compatible with WEMOS D1 PRO
- */
+   This code is fully compatible with WEMOS D1 PRO
+*/
 
 #define SERIAL_BUFFER_SIZE 2048
 
 #include <elapsedMillis.h>
-// Library elapsedMillis 
-//
+// Library elapsedMillis
 // https://github.com/pfeerick/elapsedMillis/wiki
-
-/***/
-//#define DEBUG_ON_WIFI
-#ifdef DEBUG_ON_WIFI
-#include "WifiDebug.h"
-static WifiDebug wifidebug;
-#endif
-/***/
 
 #include "LedStrip.h"
 
@@ -33,6 +25,7 @@ elapsedMillis BlinkTimer;
 int BlinkMode;
 elapsedMillis BlinkModeTimeoutTimer;
 
+static byte receivedByte;
 LedStrip ledstrip(MaxLedsPerStrip);
 
 uint32_t configuredStripLength = MaxLedsPerStrip;
@@ -41,7 +34,9 @@ uint32_t configuredStripLength = MaxLedsPerStrip;
 void setup() {
   //Serial.begin(921600);
   // 2 MBauds max rate with compatibility with CH340G
-  Serial.begin(2000000);
+  // Need to try 2000000 as seen in docs, as the max serial baudrate
+  // Need to try 3000000 as seen in arduino ide upload options...
+  Serial.begin(3000000);
 
   while (Serial.available()) {
     Serial.read();
@@ -49,11 +44,6 @@ void setup() {
   delay(100);
   Serial.println("");
 
-  /**/
-#ifdef DEBUG_ON_WIFI
-  wifidebug.begin();
-#endif
-  /**/
 
   //Initialize the lib for the ledstrip
   ledstrip.setStripLength(configuredStripLength);
@@ -65,38 +55,11 @@ void setup() {
 
   SetBlinkMode(0);
 
-#ifdef DEBUG_ON_WIFI
-  wifidebug.debug_send_msg("Setup done");
-#endif
+  ClearAllLedData();
+  ledstrip.show();
 
-  /****/
-  ClearAllLedData();
-  ledstrip.show();
-for (uint32_t i = 0; i < configuredStripLength* NUMBER_LEDSTRIP; i++) {
-  ledstrip.setPixel(i, BRIGHTNESS, 0, 0);
-  }
-  ledstrip.show();
-  FastLED.delay(200);
-  ClearAllLedData();
-  ledstrip.show();
-  for (uint32_t i = 0; i < configuredStripLength* NUMBER_LEDSTRIP; i++) {
-    ledstrip.setPixel(i, 0, BRIGHTNESS, 0);
-  }
-  ledstrip.show();
-  FastLED.delay(200);
-  ClearAllLedData();
-  ledstrip.show();
-  for (uint32_t i = 0; i < configuredStripLength* NUMBER_LEDSTRIP; i++) {
-    ledstrip.setPixel(i, 0, 0, BRIGHTNESS);
-  }
-  ledstrip.show();
-  FastLED.delay(200);
-  ClearAllLedData();
-  ledstrip.show();
-  /**/
 }
 
-static byte receivedByte;
 
 //Main loop of the programm gets called again and again.
 void loop() {
@@ -106,8 +69,12 @@ void loop() {
     receivedByte = Serial.read();
 
     switch (receivedByte) {
+      case 0:
+        // Entering command-mode request (cf DOF TeensyStripController.cs line 404)
+        Ack();
+        break;
       case 'L':
-        //Set length of strips
+        //Set number of leds per strips channel
         SetLedStripLength();
         break;
       case 'F':
@@ -131,7 +98,7 @@ void loop() {
         SendVersion();
         break;
       case 'M':
-        //Get max number of ledstrip per strip
+        //Get max number of leds per ledstrip channel
         SendMaxNumberOfLeds();
         break;
       default:
@@ -213,7 +180,8 @@ void Fill() {
   word firstLed = ReceiveWord();
   word numberOfLeds = ReceiveWord();
   int ColorData = ReceiveColorData();
-  if ( firstLed <= configuredStripLength * NUMBER_LEDSTRIP && numberOfLeds > 0 && firstLed + numberOfLeds - 1 <= configuredStripLength * NUMBER_LEDSTRIP ) {
+  if (firstLed <= configuredStripLength * NUMBER_LEDSTRIP && numberOfLeds > 0 &&
+      firstLed + numberOfLeds - 1 <= configuredStripLength * NUMBER_LEDSTRIP) {
     word endLedNr = firstLed + numberOfLeds;
     for (word ledNr = firstLed; ledNr < endLedNr; ledNr++) {
       ledstrip.setPixel(ledNr, ColorData);
@@ -230,7 +198,8 @@ void Fill() {
 void ReceiveData() {
   word firstLed = ReceiveWord();
   word numberOfLeds = ReceiveWord();
-  if ( firstLed <= configuredStripLength * NUMBER_LEDSTRIP && numberOfLeds > 0 && firstLed + numberOfLeds - 1 <= configuredStripLength * NUMBER_LEDSTRIP ) {
+  if (firstLed <= configuredStripLength * NUMBER_LEDSTRIP && numberOfLeds > 0 &&
+      firstLed + numberOfLeds - 1 <= configuredStripLength * NUMBER_LEDSTRIP) {
     //FirstLedNr and numberOfLeds are valid.
     //Receive and set color data
     word endLedNr = firstLed + numberOfLeds;
@@ -261,7 +230,7 @@ void SetLedStripLength() {
 }
 
 //Clears the data for all configured ledstrip
-void  ClearAllLedData() {
+void ClearAllLedData() {
   for (word ledNr = 0; ledNr < configuredStripLength * NUMBER_LEDSTRIP; ledNr++) {
     ledstrip.setPixel(ledNr, 0);
   }
@@ -314,4 +283,29 @@ word ReceiveWord() {
   while (!Serial.available()) {};
   wordValue = wordValue | Serial.read();
   return wordValue;
+}
+
+void TestStrips() {
+  for (uint32_t i = 0; i < configuredStripLength * NUMBER_LEDSTRIP; i++) {
+    ledstrip.setPixel(i, BRIGHTNESS, 0, 0);
+  }
+  ledstrip.show();
+  FastLED.delay(500);
+  ClearAllLedData();
+  ledstrip.show();
+  for (uint32_t i = 0; i < configuredStripLength * NUMBER_LEDSTRIP; i++) {
+    ledstrip.setPixel(i, 0, BRIGHTNESS, 0);
+  }
+  ledstrip.show();
+  FastLED.delay(500);
+  ClearAllLedData();
+  ledstrip.show();
+  for (uint32_t i = 0; i < configuredStripLength * NUMBER_LEDSTRIP; i++) {
+    ledstrip.setPixel(i, 0, 0, BRIGHTNESS);
+  }
+  ledstrip.show();
+  FastLED.delay(500);
+  ClearAllLedData();
+  ledstrip.show();
+  /**/
 }
