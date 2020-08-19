@@ -8,6 +8,9 @@
 #define SERIAL_BUFFER_SIZE 2048
 
 #include <elapsedMillis.h>
+// Library elapsedMillis 
+//
+// https://github.com/pfeerick/elapsedMillis/wiki
 
 /***/
 //#define DEBUG_ON_WIFI
@@ -20,7 +23,7 @@ static WifiDebug wifidebug;
 #include "LedStrip.h"
 
 #define FirmwareVersionMajor 1
-#define FirmwareVersionMinor 1
+#define FirmwareVersionMinor 2
 
 //Defines the Pinnumber to which the built in led
 #define LedPin D4
@@ -36,7 +39,10 @@ uint32_t configuredStripLength = MaxLedsPerStrip;
 
 //Setup of the system. Is called once on startup.
 void setup() {
-  Serial.begin(921600);
+  //Serial.begin(921600);
+  // 2 MBauds max rate with compatibility with CH340G
+  Serial.begin(2000000);
+
   while (Serial.available()) {
     Serial.read();
   };

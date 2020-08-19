@@ -7,9 +7,11 @@
 #define FASTLED_ALLOW_INTERRUPTS 0
 #endif
 
+// FastLED library needed
+// https://github.com/FastLED/FastLED
+//
 #include <FastLED.h>
 FASTLED_USING_NAMESPACE
-
 
 #define DATA_PIN1   14 // D5
 #define DATA_PIN2   12 // D6 
